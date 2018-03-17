@@ -18,7 +18,7 @@ class AngleReader(object) :
 	js = self.data["Root"]["PageRoot"]["Page"]
 	for j in js :
 	    try :	
-	        if motion in j["name"]:
+	        if motion == j["name"]:
 	            for step in j["steps"]["step"] :
                         motion_str = step["pose"]
                         motion_list = [float(m) for m in motion_str.split()]
@@ -38,7 +38,7 @@ class AngleReader(object) :
         motionset = []
         for j in js :
             try : 
-                if motion in j["name"] :
+                if motion == j["name"] :
                     for unit in j["units"]["unit"] :
                         motionset.append(self.parse(motion=unit["main"],speed=unit["mainSpeed"]))
             except Exception as e:

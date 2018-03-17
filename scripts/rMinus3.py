@@ -47,6 +47,8 @@ class Robot(object):
         
         
         #Initialize Robot Internal State
+        rospy.init_node("robot_controller",anonymous=False)
+        self.pub = rospy.Publisher('actuation',Actuation,queue_size=100)
         self.state = dict.fromkeys(self.ids,0.0)
         self.primitives = {}
         self.control = control
@@ -138,7 +140,7 @@ class Robot(object):
         executed sequentially. Motor Speed is constant"""
 
         motion_set = []
-        init = [0,1,self.state.values()]
+        init = [0,1,dict(zip(self.ids,self.state.values()))]
         motion_set.append(init)
 
 
@@ -150,8 +152,37 @@ class Robot(object):
 
 
 
-        for m in motion_set:
-            print m
+        for mid in range(1,len(motion_set)):
+            prev = motion_set[mid-1]
+            current = motion_set[mid]
+            new_set = []
+
+
+            n_frames = current[0] - prev[0]
+            spd_factor = current[1]
+
+            #if n_frames < 0:
+                #print current[0],prev[0]
+            #print n_frames
+
+            #print current[0],prev[0]
+
+            prev = prev[2]
+            current = current[2]
+            
+             
+            for id in self.ids:
+                lin = [round(x,2) for x in np.linspace(prev[id],current[id],n_frames)]
+                new_set.append(lin)
+
+            
+            new_set = zip(*new_set)
+
+            for n in new_set:
+                self.publish_frame_motion(n)
+                time.sleep(TIME_CONST/spd_factor)
+            
+            
 
     def speed_compute(self,primitive):
         #TODO
@@ -180,6 +211,15 @@ class Robot(object):
         
         return motion
 
+    def publish_frame_motion(self,motion):
+        msg = Actuation()
+        msg.ids = self.ids
+        msg.speeds = [self.speed for x in self.ids]
+        msg.angles = [x for x in motion]
+        self.pub.publish(msg)
 
-r = Robot(9,"motion_script.yaml")
-r.execute("Dummy")
+
+r = Robot(18,"motion_script.yaml")
+r.execute("Balance")
+
+
