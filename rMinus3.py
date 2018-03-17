@@ -9,12 +9,19 @@ import pprint
 
 
 ANGLES_DB_PATH = "angles.json"
+DEFAULT_SPEED = 200
+TIME_CONST = 0.008
+
+
+darwin = {}
+
+PROCESS_PIPELINE = [darwin]
 
 class Robot(object):
     """Main Class that is used to define  Robot behaviour """
 
 
-    def __init__(self,motor_ids,motion_script="",control="FRAME"):
+    def __init__(self,motor_ids,motion_script="",control="FRAME",speed=DEFAULT_SPEED):
     
         #Initialize Ids
 
@@ -32,7 +39,9 @@ class Robot(object):
         self.state = dict.fromkeys(self.ids,0.0)
         self.primitives = {}
         self.control = control
-        
+        self.speed = speed
+
+
         #Load Primitives
         try:
             with open(motion_script,"r") as file:
@@ -109,14 +118,33 @@ class Robot(object):
 
 
     def frame_compute(self,primitive):
-        pass
+
+        motion_set = []
+        init = [0,1,self.state.values()]
+        motion_set.append(init)
+
+        for prim in self.primitives[primitive]:
+            prim = [prim[0],prim[1],[prim[2][x-1] for x in self.ids]]
+            #TODO : Catch Error when ids > 18
+            motion_set.append(prim)
+
+
+
+
+
+        for m in motion_set:
+            print m
 
     def speed_compute(self,primitive):
         pass
 
 
+    
+    def process_motion(motion):
+        pass
+        
 
 
 
 r = Robot(6,"motion_script.yaml")
-r.execute("Left")
+r.execute("Dummy")
