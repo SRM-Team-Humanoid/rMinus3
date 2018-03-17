@@ -1,11 +1,20 @@
 #!/usr/bin/env python
 import rospy
+import os
+import subprocess
 import time
 import yaml
 import numpy as np
 import anglereader
 
-import pprint
+
+
+#Set Current Working Directory
+path = subprocess.check_output("rospack find rMinus3",shell=True) 
+path = path[:-1]+"/src"
+os.chdir(path)
+
+
 
 
 ANGLES_DB_PATH = "angles.json"
