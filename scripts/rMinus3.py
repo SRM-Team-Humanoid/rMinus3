@@ -7,11 +7,13 @@ import yaml
 import numpy as np
 import anglereader
 
+from rminus3.msg import Actuation
+
 
 
 #Set Current Working Directory
-path = subprocess.check_output("rospack find rMinus3",shell=True) 
-path = path[:-1]+"/src"
+path = subprocess.check_output("rospack find rminus3",shell=True) 
+path = path[:-1]+"/scripts"
 os.chdir(path)
 
 
