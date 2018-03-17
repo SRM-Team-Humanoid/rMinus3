@@ -14,6 +14,7 @@ class AngleReader(object) :
     def parse(self,motion,speed=1) :
         motions = []
 	frames = []
+        ids = [x for x in range(1,19)]
 	js = self.data["Root"]["PageRoot"]["Page"]
 	for j in js :
 	    try :	
@@ -21,6 +22,7 @@ class AngleReader(object) :
 	            for step in j["steps"]["step"] :
                         motion_str = step["pose"]
                         motion_list = [float(m) for m in motion_str.split()]
+                        motion_list = dict(zip(ids,motion_list))
 		        motions.append(motion_list)
 			frames.append(int(step["frame"]))
 					

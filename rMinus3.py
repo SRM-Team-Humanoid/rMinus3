@@ -13,7 +13,7 @@ DEFAULT_SPEED = 200
 TIME_CONST = 0.008
 
 
-darwin = {}
+darwin = {1: 90, 2: -90, 3: 67.5, 4: -67.5, 7: 45, 8: -45, 9: 'i', 10: 'i', 13: 'i', 14: 'i', 17: 'i', 18: 'i'}
 
 PROCESS_PIPELINE = [darwin]
 
@@ -42,7 +42,7 @@ class Robot(object):
         self.speed = speed
 
 
-        #Load Primitives
+        #Load Primitives from Motion Script
         try:
             with open(motion_script,"r") as file:
                 motion_data = yaml.load(file)
@@ -59,6 +59,9 @@ class Robot(object):
 
 
     def load_primitive(self,prim_dict):
+        """Merges Pages and Flows together so that a primitive is simply a set
+        of motions, where each motion consists of a frame, speed, dict of
+        angles """
         
         reader = anglereader.AngleReader(ANGLES_DB_PATH)
         
@@ -110,6 +113,8 @@ class Robot(object):
 
 
     def execute(self,primitive):
+        """Calls corresponding compute function based on control mode"""
+
         if self.control == "FRAME":
             self.frame_compute(primitive)
         elif self.control == "SPEED":
@@ -118,14 +123,16 @@ class Robot(object):
 
 
     def frame_compute(self,primitive):
+        """Creates Intermediate Frames between each frame which are to be
+        executed sequentially. Motor Speed is constant"""
 
         motion_set = []
         init = [0,1,self.state.values()]
         motion_set.append(init)
 
+
         for prim in self.primitives[primitive]:
-            prim = [prim[0],prim[1],[prim[2][x-1] for x in self.ids]]
-            #TODO : Catch Error when ids > 18
+            prim = [prim[0],prim[1],self.process_motion(prim[2])]
             motion_set.append(prim)
 
 
@@ -136,15 +143,32 @@ class Robot(object):
             print m
 
     def speed_compute(self,primitive):
+        #TODO
+
         pass
 
 
     
-    def process_motion(motion):
-        pass
+    def process_motion(self,motion):
+        """Processes each motion_dict to apply offsets/modifiers specified in
+        PROCESS_PIPELINE"""
+
+        motion = {id:motion[id] for id in self.ids}
         
+         
+        for process in PROCESS_PIPELINE:
+            for id in self.ids:
+                if id in process:
+                    val = process[id]
+                    if val == "i":
+                        motion[id] = -1 * motion[id]
+                    else:
+                        motion[id] += val
+
+                    motion[id] = round(motion[id],2)
+        
+        return motion
 
 
-
-r = Robot(6,"motion_script.yaml")
+r = Robot(9,"motion_script.yaml")
 r.execute("Dummy")
