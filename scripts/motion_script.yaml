@@ -27,3 +27,9 @@ Balance:
       Type : "Page"
       Speed : "x1"
       Exclude : []
+
+Walk:
+    - Code : "22 F_S_L"
+      Type : "Flow"
+      Speed : "x1"
+      Exclude : []

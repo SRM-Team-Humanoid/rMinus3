@@ -181,6 +181,7 @@ class Robot(object):
             for n in new_set:
                 self.publish_frame_motion(n)
                 time.sleep(TIME_CONST/spd_factor)
+                self.state = dict(zip(self.ids,n))
             
             
 
