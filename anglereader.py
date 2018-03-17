@@ -11,7 +11,7 @@ class AngleReader(object) :
 
 
 		
-    def parse(self,motion) :
+    def parse(self,motion,speed=1) :
         motions = []
 	frames = []
 	js = self.data["Root"]["PageRoot"]["Page"]
@@ -27,8 +27,9 @@ class AngleReader(object) :
 	    except Exception as e:
 		raise RuntimeError(e)
 		
-		
-        return zip(frames,motions)
+	
+        speeds = [float(speed) for x in frames]
+        return list(zip(frames,speeds,motions))
 			
     def setparse(self,motion,offset=[]) :
         js = self.data["Root"]["FlowRoot"]["Flow"]
@@ -37,7 +38,7 @@ class AngleReader(object) :
             try : 
                 if motion in j["name"] :
                     for unit in j["units"]["unit"] :
-                        motionset.append(self.parse(motion=unit["main"]))
+                        motionset.append(self.parse(motion=unit["main"],speed=unit["mainSpeed"]))
             except Exception as e:
                 raise RuntimeError(e)
 

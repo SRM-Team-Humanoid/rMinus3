@@ -1,0 +1,11 @@
+Dummy:
+    - Code : "7 Scratch head"
+      Type : "Page"
+      Speed : "x1"
+      Exclude : [1,2,3,4,5]
+
+    - Code : "5 Push up"
+      Type : "Flow"
+      Speed : "x1"
+      Exclude : []
+        
